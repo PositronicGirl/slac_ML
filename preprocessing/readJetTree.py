@@ -58,6 +58,7 @@ for files in Delroot:
 	tTree = tFile.Get("jetgrids")
 	count=0
 	for event in tTree:
+		#criteria can be set to a mass range or an SD mass range
 		if (event.JetAK8_SDMASS < 65 or event.JetAK8_SDMASS > 95):
 			continue
 		if (event.JetAK8_PT > 325):
@@ -86,7 +87,9 @@ for files in Delroot:
 			signal.append(0)
 		for calo in range(len(event.CaloTower_ET)):
 			etadistance=int(m.floor((event.CaloTower_ETA[calo]-etacenter)/.0714 +.5))
-			phidistance= int(m.floor((event.CaloTower_PHI[calo]-phicenter)/(m.pi/44)+.5))
+			phidiff=event.CaloTower_PHI[calo]-phicenter
+			phidiff-=m.ceil(phidiff/(2*m.pi)-0.5)*2*m.pi
+			phidistance= int(m.floor(phidiff/(m.pi/44)+.5))
 			if abs(etadistance)<=12 and abs(phidistance)<=12:
 				Jetarray[12+etadistance][12+phidistance]+=event.CaloTower_ET[calo]/np.cosh(event.CaloTower_ETA[calo])
 		
@@ -97,7 +100,7 @@ for files in Delroot:
             
 #plot_mean_jet(entries).savefig(output+'.pdf')
 #plot_jet(entries[0]).savefig('Wprime_few.pdf')
-np.savez(output,image=entries,signal=signal,PCEta=PCeta,PCPhi=PCphi,SubLeadingEta=Sublead_eta,SubLeadingPhi=Sublead_phi,jet_pt=jet_pt,jet_eta=jet_eta,jet_phi=jet_phi,jet_mass=jet_mass,tau21=tau21)
+np.savez(output,image=entries,signal=signal,PCEta=PCeta,PCPhi=PCphi,SubLeadingEta=Sublead_eta,SubLeadingPhi=Sublead_phi,jet_pt=jet_pt,jet_eta=jet_eta,jet_phi=jet_phi,jet_mass=jet_mass,jet_sdmass=jet_sdmass,tau21=tau21)
 
 
 #                
